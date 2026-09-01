@@ -1,99 +1,1259 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Library Zone — Parent Portal</title>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
-:root{--accent:#5577ff;--ink:#172033;--muted:#6b7280;--bg:#f5f7fb;--card:#fff;--line:#e6eaf2;--danger:#b42318;--ok:#087443}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:#fff;border-bottom:1px solid var(--line);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px}header h1{margin:0;font-size:20px}header span{font-size:13px;color:var(--muted)}
-main{max-width:1050px;margin:28px auto;padding:0 18px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 8px 30px rgba(20,30,60,.06);margin-bottom:18px}
-.login{max-width:430px;margin:55px auto}.logo{font-weight:800;font-size:28px;margin-bottom:5px}.subtitle{color:var(--muted);margin-bottom:22px}label{display:block;font-size:13px;font-weight:650;margin:13px 0 6px}input{width:100%;padding:12px;border:1px solid #ccd3df;border-radius:9px;font-size:15px}button{border:0;border-radius:9px;padding:11px 15px;background:var(--accent);color:white;font-weight:650;cursor:pointer}button.secondary{background:#eef1f7;color:var(--ink)}button.danger{background:#fff0ee;color:var(--danger)}button:disabled{opacity:.55;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.error{color:var(--danger);font-size:13px;margin-top:12px}.ok{color:var(--ok);font-size:13px;margin-top:12px}.hidden{display:none!important}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{border:1px solid var(--line);border-radius:11px;padding:15px}.stat b{display:block;font-size:24px;margin-top:3px}.stat span{font-size:12px;color:var(--muted)}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:13px}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}td.num,th.num{text-align:right}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#edf2ff;color:#3153cc;font-size:11px;font-weight:700}.empty{padding:30px;text-align:center;color:var(--muted)}
-.note{font-size:12px;color:var(--muted);line-height:1.5}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.top h2{margin:0 0 4px}.small{font-size:12px;color:var(--muted)}
-@media(max-width:750px){.summary{grid-template-columns:1fr 1fr}table{display:block;overflow:auto;white-space:nowrap}}
+
+:root{
+    --accent:#5577ff;
+    --ink:#172033;
+    --muted:#6b7280;
+    --bg:#f5f7fb;
+    --card:#fff;
+    --line:#e6eaf2;
+    --danger:#b42318;
+    --ok:#087443;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+}
+
+header{
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    padding:18px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+header h1{
+    margin:0;
+    font-size:20px;
+}
+
+header span{
+    font-size:13px;
+    color:var(--muted);
+}
+
+main{
+    max-width:1050px;
+    margin:28px auto;
+    padding:0 18px;
+}
+
+.card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    box-shadow:0 8px 30px rgba(20,30,60,.06);
+    margin-bottom:18px;
+}
+
+.login{
+    max-width:430px;
+    margin:55px auto;
+}
+
+.logo{
+    font-weight:800;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.subtitle{
+    color:var(--muted);
+    margin-bottom:22px;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    font-weight:650;
+    margin:13px 0 6px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccd3df;
+    border-radius:9px;
+    font-size:15px;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:11px 15px;
+    background:var(--accent);
+    color:white;
+    font-weight:650;
+    cursor:pointer;
+}
+
+button.secondary{
+    background:#eef1f7;
+    color:var(--ink);
+}
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.actions{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    margin-top:16px;
+}
+
+.error{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:12px;
+}
+
+.ok{
+    color:var(--ok);
+    font-size:13px;
+    margin-top:12px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* ============================= */
+/* QR SECTION */
+/* ============================= */
+
+.qr-card{
+    text-align:center;
+    padding:25px;
+}
+
+.qr-title{
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:5px;
+}
+
+.qr-subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:18px;
+}
+
+#qrcode{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:15px auto;
+    min-height:240px;
+}
+
+#qrcode canvas,
+#qrcode img{
+    border:10px solid white;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,.18);
+}
+
+.qr-name{
+    font-size:18px;
+    font-weight:750;
+    margin-top:15px;
+}
+
+.qr-email{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
+}
+
+.qr-note{
+    margin-top:15px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.stat{
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:15px;
+}
+
+.stat b{
+    display:block;
+    font-size:24px;
+    margin-top:3px;
+}
+
+.stat span{
+    font-size:12px;
+    color:var(--muted);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    text-align:left;
+    padding:11px 9px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+}
+
+th{
+    font-size:12px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+}
+
+td.num,
+th.num{
+    text-align:right;
+}
+
+.pill{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#edf2ff;
+    color:#3153cc;
+    font-size:11px;
+    font-weight:700;
+}
+
+.empty{
+    padding:30px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.note{
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.5;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.top h2{
+    margin:0 0 4px;
+}
+
+.small{
+    font-size:12px;
+    color:var(--muted);
+}
+
+@media(max-width:750px){
+
+    .summary{
+        grid-template-columns:1fr 1fr;
+    }
+
+    table{
+        display:block;
+        overflow:auto;
+        white-space:nowrap;
+    }
+
+    header{
+        padding:15px;
+    }
+
+    main{
+        padding:0 10px;
+    }
+}
+
 </style>
 </head>
-<body>
-<header><div><h1>📚 Library Zone</h1><span id="portalSubtitle">Parent Portal</span></div><div style="display:flex;align-items:center;gap:8px"><label for="languageSelect" style="font-size:12px;font-weight:650;margin:0">Language</label><select id="languageSelect" style="padding:7px 9px;border-radius:8px;border:1px solid #ccd3df;background:#fff"><option value="en-US">English (US)</option><option value="de-DE">Deutsch (Deutschland)</option><option value="es-MX">Español (México)</option></select><button id="logoutBtn" class="secondary hidden">Log out</button></div></header>
-<main>
-<section id="loginCard" class="card login">
-  <div class="logo">Parent Access</div><div class="subtitle">Sign in to view your books and fees. Use the Parent ID or the email address provided by the school.</div>
-  <label for="parentId">Parent ID or Email</label><input id="parentId" autocomplete="username" placeholder="Your Parent ID or email">
-  <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
-  <div class="actions"><button id="loginBtn">Sign in</button></div>
-  <div id="loginMsg" class="error"></div>
-  <p class="note">Your Firebase account controls access. You can only see borrowing records linked to your own secure account.</p>
-</section>
-<section id="portal" class="hidden">
-  <div class="card"><div class="top"><div><h2 id="welcome">Parent</h2><div id="identity" class="small"></div></div></div></div>
-  <div class="summary">
-    <div class="stat"><span>Currently borrowed</span><b id="activeCount">0</b></div>
-    <div class="stat"><span>Books borrowed</span><b id="totalCount">0</b></div>
-    <div class="stat"><span>Current fees</span><b id="currentFees">0.00</b></div>
-    <div class="stat"><span>Paid fees</span><b id="paidFees">0.00</b></div>
-  </div>
-  <div class="card"><div class="top"><div><h2>My Borrowed Books</h2><div class="small">Only records belonging to your Parent ID are displayed.</div></div></div><div id="borrowArea" style="margin-top:14px"></div></div>
-</section>
-</main>
-<script>
-const firebaseConfig={
- apiKey:"AIzaSyDlX9t7jG5dm2t3XoPts2EAPZ3VBnxxBjI",
- authDomain:"libraryzoneparent-36d5a.firebaseapp.com",
- projectId:"libraryzoneparent-36d5a",
- storageBucket:"libraryzoneparent-36d5a.firebasestorage.app",
- messagingSenderId:"906159197620",
- appId:"1:906159197620:web:04b70b5f426e462a4936e1",
- measurementId:"G-3S0RCHLZJV"
-};
-const app=firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(app);const db=firebase.firestore(app);
-const PORTAL_LANGUAGE_KEY='libraryzone_language';
-const PORTAL_I18N={
-'en-US':{'Parent Portal':'Parent Portal','Log out':'Log out','Language':'Language','Parent Access':'Parent Access','Sign in to view your books and fees. Use the Parent ID or the email address provided by the school.':'Sign in to view your books and fees. Use the Parent ID or the email address provided by the school.','Parent ID or Email':'Parent ID or Email','Your Parent ID or email':'Your Parent ID or email','Password':'Password','Sign in':'Sign in','Your Firebase account controls access. You can only see borrowing records linked to your own secure account.':'Your Firebase account controls access. You can only see borrowing records linked to your own secure account.','Parent':'Parent','Currently borrowed':'Currently borrowed','Books borrowed':'Books borrowed','Current fees':'Current fees','Paid fees':'Paid fees','My Borrowed Books':'My Borrowed Books','Only records belonging to your Parent ID are displayed.':'Only records belonging to your Parent ID are displayed.','Book':'Book','Borrowed':'Borrowed','Returned':'Returned','Weekly Fee':'Weekly Fee','Weeks':'Weeks','Fee':'Fee','Paid':'Paid','Unpaid':'Unpaid','No borrowing records found for your account.':'No borrowing records found for your account.','Parent ID:':'Parent ID:','Sign-in failed. Check your Parent ID and password.':'Sign-in failed. Check your Parent ID and password.','Enter your Parent ID and password.':'Enter your Parent ID and password.','Signing in...':'Signing in...'},
-'de-DE':{'Parent Portal':'Elternportal','Log out':'Abmelden','Language':'Sprache','Parent Access':'Elternzugang','Sign in to view your books and fees. Use the Parent ID or the email address provided by the school.':'Melden Sie sich an, um Ihre Bücher und Gebühren zu sehen. Verwenden Sie die Eltern-ID oder die von der Schule bereitgestellte E-Mail-Adresse.','Parent ID or Email':'Eltern-ID oder E-Mail','Your Parent ID or email':'Ihre Eltern-ID oder E-Mail','Password':'Passwort','Sign in':'Anmelden','Your Firebase account controls access. You can only see borrowing records linked to your own secure account.':'Ihr Firebase-Konto steuert den Zugriff. Sie können nur die mit Ihrem eigenen sicheren Konto verknüpften Ausleihdatensätze sehen.','Parent':'Elternteil','Currently borrowed':'Derzeit ausgeliehen','Books borrowed':'Ausgeliehene Bücher','Current fees':'Aktuelle Gebühren','Paid fees':'Bezahlte Gebühren','My Borrowed Books':'Meine ausgeliehenen Bücher','Only records belonging to your Parent ID are displayed.':'Es werden nur Datensätze angezeigt, die zu Ihrer Eltern-ID gehören.','Book':'Buch','Borrowed':'Ausgeliehen','Returned':'Zurückgegeben','Weekly Fee':'Wöchentliche Gebühr','Weeks':'Wochen','Fee':'Gebühr','Paid':'Bezahlt','Unpaid':'Unbezahlt','No borrowing records found for your account.':'Für Ihr Konto wurden keine Ausleihen gefunden.','Parent ID:':'Eltern-ID:','Sign-in failed. Check your Parent ID and password.':'Anmeldung fehlgeschlagen. Prüfen Sie Ihre Eltern-ID und Ihr Passwort.','Enter your Parent ID and password.':'Geben Sie Ihre Eltern-ID und Ihr Passwort ein.','Signing in...':'Anmeldung läuft...'},
-'es-MX':{'Parent Portal':'Portal para padres','Log out':'Cerrar sesión','Language':'Idioma','Parent Access':'Acceso para padres','Sign in to view your books and fees. Use the Parent ID or the email address provided by the school.':'Inicia sesión para consultar tus libros y cargos. Usa el ID de padre/madre o el correo electrónico proporcionado por la escuela.','Parent ID or Email':'ID de padre/madre o correo','Your Parent ID or email':'Tu ID de padre/madre o correo','Password':'Contraseña','Sign in':'Iniciar sesión','Your Firebase account controls access. You can only see borrowing records linked to your own secure account.':'Tu cuenta de Firebase controla el acceso. Solo puedes ver los registros de préstamos vinculados a tu propia cuenta segura.','Parent':'Padre/Madre','Currently borrowed':'Actualmente prestados','Books borrowed':'Libros prestados','Current fees':'Cargos actuales','Paid fees':'Cargos pagados','My Borrowed Books':'Mis libros prestados','Only records belonging to your Parent ID are displayed.':'Solo se muestran los registros que pertenecen a tu ID de padre/madre.','Book':'Libro','Borrowed':'Prestado','Returned':'Devuelto','Weekly Fee':'Cargo semanal','Weeks':'Semanas','Fee':'Cargo','Paid':'Pagado','Unpaid':'Pendiente','No borrowing records found for your account.':'No se encontraron registros de préstamos para tu cuenta.','Parent ID:':'ID de padre/madre:','Sign-in failed. Check your Parent ID and password.':'No se pudo iniciar sesión. Revisa tu ID de padre/madre y contraseña.','Enter your Parent ID and password.':'Escribe tu ID de padre/madre y contraseña.','Signing in...':'Iniciando sesión...'}
-};
-const PORTAL_SOURCE=new WeakMap(),PORTAL_ATTR_SOURCE=new WeakMap();
-function portalLang(){return localStorage.getItem(PORTAL_LANGUAGE_KEY)||'en-US'}
-function pt(source){const d=PORTAL_I18N[portalLang()]||PORTAL_I18N['en-US'];return Object.prototype.hasOwnProperty.call(d,source)?d[source]:source}
-function applyPortalLanguage(root=document.body){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const a=[];let n;while(n=w.nextNode())a.push(n);a.forEach(x=>{const p=x.parentElement;if(!p||['SCRIPT','STYLE','NOSCRIPT'].includes(p.tagName))return;const src=PORTAL_SOURCE.has(x)?PORTAL_SOURCE.get(x):x.nodeValue.trim();if(!src)return;if(!PORTAL_SOURCE.has(x))PORTAL_SOURCE.set(x,src);const lead=x.nodeValue.match(/^\s*/)?.[0]||'',trail=x.nodeValue.match(/\s*$/)?.[0]||'';x.nodeValue=lead+pt(src)+trail});document.querySelectorAll('input[placeholder],input[aria-label]').forEach(el=>['placeholder','aria-label'].forEach(attr=>{if(!el.hasAttribute(attr))return;let r=PORTAL_ATTR_SOURCE.get(el);if(!r){r={};PORTAL_ATTR_SOURCE.set(el,r)}if(!r[attr])r[attr]=el.getAttribute(attr);el.setAttribute(attr,pt(r[attr]))}))}
-function setPortalLanguage(lang){if(!PORTAL_I18N[lang])lang='en-US';localStorage.setItem(PORTAL_LANGUAGE_KEY,lang);document.documentElement.lang=lang;const sel=document.getElementById('languageSelect');if(sel)sel.value=lang;applyPortalLanguage(document.body)}
-(function(){const sel=document.getElementById('languageSelect');if(sel){sel.value=portalLang();sel.addEventListener('change',e=>setPortalLanguage(e.target.value))}document.documentElement.lang=portalLang();const mo=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1||n.nodeType===3)applyPortalLanguage(n.nodeType===1?n:document.body)})));mo.observe(document.body,{childList:true,subtree:true});setTimeout(()=>applyPortalLanguage(document.body),0)})();
 
-const COLLECTION='parentBorrows';
-const $=id=>document.getElementById(id);
-function safe(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function normalizeParentEmail(id){const v=String(id||'').trim().toLowerCase(); return v.includes('@') ? v : v.replace(/[^a-z0-9._-]/g,'_')+'@parents.libraryzone.app';}
-function money(n){return Number(n||0).toFixed(2)}
-function formatDate(v){if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleDateString(portalLang(),{year:'numeric',month:'short',day:'numeric'});}
-function weeksBetween(start,end){if(!start)return 0;const a=new Date(start),b=end?new Date(end):new Date();if(Number.isNaN(a.getTime())||Number.isNaN(b.getTime()))return 0;return Math.max(1,Math.ceil(Math.max(0,b-a)/604800000));}
-function feeForRecord(r){if(r.totalFee!==undefined)return Number(r.totalFee||0);return weeksBetween(r.borrowDate,r.returnDate)*Number(r.weeklyFee||0)}
-function setMsg(text,ok=false){$('loginMsg').textContent=text;$('loginMsg').className=ok?'ok':'error'}
-$('loginBtn').onclick=async()=>{const id=$('parentId').value.trim();const pw=$('password').value;if(!id||!pw){setMsg('Enter your Parent ID and password.');return}$('loginBtn').disabled=true;setMsg('Signing in...',true);try{await auth.signInWithEmailAndPassword(normalizeParentEmail(id),pw);setMsg('');}catch(e){console.error(e);setMsg('Sign-in failed. Check your Parent ID and password.');}finally{$('loginBtn').disabled=false}};
-$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});$('parentId').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
-$('logoutBtn').onclick=()=>auth.signOut();
-async function loadPortal(user){
- $('loginCard').classList.add('hidden');$('portal').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');
- const parentId=(user.email||'').endsWith('@parents.libraryzone.app') ? user.email.split('@')[0] : (user.email||'');$('identity').textContent='Parent ID: '+parentId;
- try{
-   const snap=await db.collection(COLLECTION).where('parentUid','==',user.uid).get();
-   const rows=[];snap.forEach(d=>rows.push({id:d.id,...d.data()}));
-   rows.sort((a,b)=>String(b.borrowDate||'').localeCompare(String(a.borrowDate||'')));
-   const active=rows.filter(r=>!r.returnDate);const total=rows.reduce((s,r)=>s+feeForRecord(r),0);const paid=rows.filter(r=>r.feePaid).reduce((s,r)=>s+feeForRecord(r),0);
-   $('welcome').textContent=rows[0]?.parentName||'Parent';$('activeCount').textContent=active.length;$('totalCount').textContent=rows.length;$('currentFees').textContent=money(total-paid);$('paidFees').textContent=money(paid);
-   if(!rows.length){$('borrowArea').innerHTML='<div class="empty">No borrowing records found for your account.</div>';return}
-   $('borrowArea').innerHTML='<table><thead><tr><th>Book</th><th>Borrowed</th><th>Returned</th><th class="num">Weekly Fee</th><th class="num">Weeks</th><th class="num">Fee</th><th>Status</th></tr></thead><tbody>'+rows.map(r=>{
-      const weeks=weeksBetween(r.borrowDate,r.returnDate);const fee=feeForRecord(r);const status=r.returnDate?'<span class="pill">Returned</span>':'<span class="pill">Borrowed</span>';
-      return `<tr><td><strong>${safe(r.bookTitle||r.bookBarcode||'Book')}</strong><div class="small">${safe(r.bookAuthor||'')} · ${safe(r.bookBarcode||'')}</div></td><td>${formatDate(r.borrowDate)}</td><td>${formatDate(r.returnDate)}</td><td class="num">${money(r.weeklyFee)}</td><td class="num">${weeks}</td><td class="num"><strong>${money(fee)}</strong><div class="small">${r.feePaid?'Paid':'Unpaid'}</div></td><td>${status}</td></tr>`;
-   }).join('')+'</tbody></table>';
- }catch(e){console.error(e);$('borrowArea').innerHTML='<div class="empty" style="color:#b42318">Unable to load your records. Please contact the school administrator.</div>'}
+<body>
+
+<header>
+
+    <div>
+        <h1>📚 Library Zone</h1>
+        <span id="portalSubtitle">Parent Portal</span>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px">
+
+        <label
+            for="languageSelect"
+            style="font-size:12px;font-weight:650;margin:0">
+            Language
+        </label>
+
+        <select
+            id="languageSelect"
+            style="padding:7px 9px;border-radius:8px;border:1px solid #ccd3df;background:#fff">
+
+            <option value="en-US">English (US)</option>
+            <option value="de-DE">Deutsch (Deutschland)</option>
+            <option value="es-MX">Español (México)</option>
+
+        </select>
+
+        <button
+            id="logoutBtn"
+            class="secondary hidden">
+            Log out
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+<!-- ===================================== -->
+<!-- LOGIN -->
+<!-- ===================================== -->
+
+<section
+    id="loginCard"
+    class="card login">
+
+    <div class="logo">
+        Parent Access
+    </div>
+
+    <div class="subtitle">
+        Sign in to view your books and generate your Library Zone QR code.
+    </div>
+
+    <label for="parentEmail">
+        Email
+    </label>
+
+    <input
+        id="parentEmail"
+        type="email"
+        autocomplete="username"
+        placeholder="Your email address">
+
+
+    <label for="password">
+        Password
+    </label>
+
+    <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Password">
+
+
+    <div class="actions">
+
+        <button id="loginBtn">
+            Sign in
+        </button>
+
+    </div>
+
+    <div
+        id="loginMsg"
+        class="error">
+    </div>
+
+    <p class="note">
+        Your Firebase account controls access to your Library Zone account.
+    </p>
+
+</section>
+
+
+<!-- ===================================== -->
+<!-- PARENT PORTAL -->
+<!-- ===================================== -->
+
+<section
+    id="portal"
+    class="hidden">
+
+
+    <!-- ================================= -->
+    <!-- QR CODE AT THE TOP -->
+    <!-- ================================= -->
+
+    <div class="card qr-card">
+
+        <div class="qr-title">
+            📱 My Library Zone QR Code
+        </div>
+
+        <div class="qr-subtitle">
+            Scan this code to identify your parent account.
+        </div>
+
+        <div id="qrcode"></div>
+
+        <div
+            id="qrParentName"
+            class="qr-name">
+        </div>
+
+        <div
+            id="qrParentEmail"
+            class="qr-email">
+        </div>
+
+        <div class="qr-note">
+            Present this QR code when borrowing or returning books.
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- WELCOME -->
+    <!-- ================================= -->
+
+    <div class="card">
+
+        <div class="top">
+
+            <div>
+
+                <h2 id="welcome">
+                    Parent
+                </h2>
+
+                <div
+                    id="identity"
+                    class="small">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- SUMMARY -->
+    <!-- ================================= -->
+
+    <div class="summary">
+
+        <div class="stat">
+
+            <span>
+                Currently borrowed
+            </span>
+
+            <b id="activeCount">
+                0
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Books borrowed
+            </span>
+
+            <b id="totalCount">
+                0
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Current fees
+            </span>
+
+            <b id="currentFees">
+                0.00
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Paid fees
+            </span>
+
+            <b id="paidFees">
+                0.00
+            </b>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================= -->
+    <!-- BORROWED BOOKS -->
+    <!-- ================================= -->
+
+    <div class="card">
+
+        <div class="top">
+
+            <div>
+
+                <h2>
+                    My Borrowed Books
+                </h2>
+
+                <div class="small">
+                    Only records belonging to your account are displayed.
+                </div>
+
+            </div>
+
+        </div>
+
+        <div
+            id="borrowArea"
+            style="margin-top:14px">
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* ========================================= */
+/* FIREBASE CONFIGURATION */
+/* ========================================= */
+
+const firebaseConfig = {
+
+    apiKey:"AIzaSyDlX9t7jG5dm2t3XoPts2EAPZ3VBnxxBjI",
+
+    authDomain:"libraryzoneparent-36d5a.firebaseapp.com",
+
+    projectId:"libraryzoneparent-36d5a",
+
+    storageBucket:"libraryzoneparent-36d5a.firebasestorage.app",
+
+    messagingSenderId:"906159197620",
+
+    appId:"1:906159197620:web:04b70b5f426e462a4936e1",
+
+    measurementId:"G-3S0RCHLZJV"
+
+};
+
+
+/* ========================================= */
+/* INITIALIZE FIREBASE */
+/* ========================================= */
+
+const app = firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth(app);
+
+const db = firebase.firestore(app);
+
+
+/* ========================================= */
+/* COLLECTION */
+/* ========================================= */
+
+const COLLECTION = "parentBorrows";
+
+
+/* ========================================= */
+/* HELPERS */
+/* ========================================= */
+
+const $ = id => document.getElementById(id);
+
+
+function safe(v){
+
+    return String(v ?? '').replace(
+        /[&<>"']/g,
+
+        m => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+        }[m])
+    );
+
 }
-auth.onAuthStateChanged(user=>{if(user)loadPortal(user);else{$('loginCard').classList.remove('hidden');$('portal').classList.add('hidden');$('logoutBtn').classList.add('hidden')}});
+
+
+function money(n){
+
+    return Number(n || 0).toFixed(2);
+
+}
+
+
+function formatDate(v){
+
+    if(!v)
+        return '—';
+
+    const d = new Date(v);
+
+    if(Number.isNaN(d.getTime()))
+        return '—';
+
+    return d.toLocaleDateString(
+        document.documentElement.lang || 'en-US',
+        {
+            year:'numeric',
+            month:'short',
+            day:'numeric'
+        }
+    );
+
+}
+
+
+function weeksBetween(start,end){
+
+    if(!start)
+        return 0;
+
+    const a = new Date(start);
+
+    const b = end
+        ? new Date(end)
+        : new Date();
+
+    if(
+        Number.isNaN(a.getTime()) ||
+        Number.isNaN(b.getTime())
+    ){
+        return 0;
+    }
+
+    return Math.max(
+        1,
+        Math.ceil(
+            Math.max(0,b-a) / 604800000
+        )
+    );
+
+}
+
+
+function feeForRecord(r){
+
+    if(r.totalFee !== undefined)
+        return Number(r.totalFee || 0);
+
+    return weeksBetween(
+        r.borrowDate,
+        r.returnDate
+    ) * Number(r.weeklyFee || 0);
+
+}
+
+
+/* ========================================= */
+/* LOGIN MESSAGE */
+/* ========================================= */
+
+function setMsg(text,ok=false){
+
+    $('loginMsg').textContent = text;
+
+    $('loginMsg').className =
+        ok ? 'ok' : 'error';
+
+}
+
+
+/* ========================================= */
+/* GENERATE QR CODE */
+/* ========================================= */
+
+function generateParentQR(user){
+
+    const qrContainer =
+        $('qrcode');
+
+    qrContainer.innerHTML = "";
+
+
+    /*
+       IMPORTANT:
+
+       This creates a QR containing:
+
+       Email
+       Password
+
+       Example:
+
+       {
+         "type":"LIBRARY_ZONE_PARENT",
+         "email":"parent@example.com",
+         "password":"123456"
+       }
+
+       Your scanner can read these fields.
+    */
+
+    const qrData = {
+
+        type:"LIBRARY_ZONE_PARENT",
+
+        email:user.email,
+
+        password:window.currentParentPassword
+
+    };
+
+
+    const qrText =
+        JSON.stringify(qrData);
+
+
+    new QRCode(qrContainer,{
+
+        text:qrText,
+
+        width:240,
+
+        height:240,
+
+        colorDark:"#000000",
+
+        colorLight:"#ffffff",
+
+        correctLevel:QRCode.CorrectLevel.H
+
+    });
+
+
+    $('qrParentEmail').textContent =
+        user.email || "";
+
+}
+
+
+/* ========================================= */
+/* LOGIN */
+/* ========================================= */
+
+$('loginBtn').onclick = async () => {
+
+    const email =
+        $('parentEmail').value.trim();
+
+    const pw =
+        $('password').value;
+
+
+    if(!email || !pw){
+
+        setMsg(
+            "Enter your email and password."
+        );
+
+        return;
+
+    }
+
+
+    $('loginBtn').disabled = true;
+
+    setMsg(
+        "Signing in...",
+        true
+    );
+
+
+    try{
+
+        /*
+          Save password temporarily only
+          so the QR can be generated.
+        */
+
+        window.currentParentPassword = pw;
+
+
+        await auth.signInWithEmailAndPassword(
+            email,
+            pw
+        );
+
+
+        setMsg("");
+
+    }
+
+    catch(e){
+
+        console.error(e);
+
+        window.currentParentPassword = null;
+
+        setMsg(
+            "Sign-in failed. Check your email and password."
+        );
+
+    }
+
+    finally{
+
+        $('loginBtn').disabled = false;
+
+    }
+
+};
+
+
+/* ========================================= */
+/* ENTER KEY LOGIN */
+/* ========================================= */
+
+$('password').addEventListener(
+    'keydown',
+    e => {
+
+        if(e.key === 'Enter')
+            $('loginBtn').click();
+
+    }
+);
+
+
+$('parentEmail').addEventListener(
+    'keydown',
+    e => {
+
+        if(e.key === 'Enter')
+            $('loginBtn').click();
+
+    }
+);
+
+
+/* ========================================= */
+/* LOGOUT */
+/* ========================================= */
+
+$('logoutBtn').onclick = async () => {
+
+    window.currentParentPassword = null;
+
+    await auth.signOut();
+
+};
+
+
+/* ========================================= */
+/* LOAD PARENT PORTAL */
+/* ========================================= */
+
+async function loadPortal(user){
+
+    $('loginCard')
+        .classList
+        .add('hidden');
+
+
+    $('portal')
+        .classList
+        .remove('hidden');
+
+
+    $('logoutBtn')
+        .classList
+        .remove('hidden');
+
+
+    /*
+      Generate QR FIRST.
+
+      This means the QR is displayed
+      before the books section.
+    */
+
+    generateParentQR(user);
+
+
+    /*
+      Parent ID / email
+    */
+
+    $('identity').textContent =
+        "Email: " + (user.email || "");
+
+
+    try{
+
+        /*
+          Get records belonging to
+          authenticated Firebase user.
+        */
+
+        const snap =
+            await db
+                .collection(COLLECTION)
+                .where(
+                    'parentUid',
+                    '==',
+                    user.uid
+                )
+                .get();
+
+
+        const rows = [];
+
+
+        snap.forEach(d => {
+
+            rows.push({
+                id:d.id,
+                ...d.data()
+            });
+
+        });
+
+
+        rows.sort(
+            (a,b) =>
+                String(
+                    b.borrowDate || ''
+                ).localeCompare(
+                    String(
+                        a.borrowDate || ''
+                    )
+                )
+        );
+
+
+        const active =
+            rows.filter(
+                r => !r.returnDate
+            );
+
+
+        const total =
+            rows.reduce(
+                (s,r) =>
+                    s + feeForRecord(r),
+                0
+            );
+
+
+        const paid =
+            rows
+                .filter(r => r.feePaid)
+                .reduce(
+                    (s,r) =>
+                        s + feeForRecord(r),
+                    0
+                );
+
+
+        /*
+          Update summary
+        */
+
+        $('welcome').textContent =
+            rows[0]?.parentName ||
+            'Parent';
+
+
+        $('qrParentName').textContent =
+            rows[0]?.parentName ||
+            'Parent';
+
+
+        $('activeCount').textContent =
+            active.length;
+
+
+        $('totalCount').textContent =
+            rows.length;
+
+
+        $('currentFees').textContent =
+            money(total - paid);
+
+
+        $('paidFees').textContent =
+            money(paid);
+
+
+        /*
+          No books
+        */
+
+        if(!rows.length){
+
+            $('borrowArea').innerHTML =
+                '<div class="empty">' +
+                'No borrowing records found for your account.' +
+                '</div>';
+
+            return;
+
+        }
+
+
+        /*
+          Display books
+        */
+
+        $('borrowArea').innerHTML =
+
+            '<table>' +
+
+            '<thead>' +
+
+            '<tr>' +
+
+            '<th>Book</th>' +
+
+            '<th>Borrowed</th>' +
+
+            '<th>Returned</th>' +
+
+            '<th class="num">Weekly Fee</th>' +
+
+            '<th class="num">Weeks</th>' +
+
+            '<th class="num">Fee</th>' +
+
+            '<th>Status</th>' +
+
+            '</tr>' +
+
+            '</thead>' +
+
+            '<tbody>' +
+
+            rows.map(r => {
+
+                const weeks =
+                    weeksBetween(
+                        r.borrowDate,
+                        r.returnDate
+                    );
+
+
+                const fee =
+                    feeForRecord(r);
+
+
+                const status =
+                    r.returnDate
+
+                    ?
+
+                    '<span class="pill">' +
+                    'Returned' +
+                    '</span>'
+
+                    :
+
+                    '<span class="pill">' +
+                    'Borrowed' +
+                    '</span>';
+
+
+                return `
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            ${safe(
+                                r.bookTitle ||
+                                r.bookBarcode ||
+                                'Book'
+                            )}
+                        </strong>
+
+                        <div class="small">
+
+                            ${safe(
+                                r.bookAuthor || ''
+                            )}
+
+                            ·
+
+                            ${safe(
+                                r.bookBarcode || ''
+                            )}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${formatDate(
+                            r.borrowDate
+                        )}
+                    </td>
+
+
+                    <td>
+                        ${formatDate(
+                            r.returnDate
+                        )}
+                    </td>
+
+
+                    <td class="num">
+                        ${money(
+                            r.weeklyFee
+                        )}
+                    </td>
+
+
+                    <td class="num">
+                        ${weeks}
+                    </td>
+
+
+                    <td class="num">
+
+                        <strong>
+                            ${money(fee)}
+                        </strong>
+
+                        <div class="small">
+
+                            ${
+                                r.feePaid
+                                ? 'Paid'
+                                : 'Unpaid'
+                            }
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${status}
+                    </td>
+
+                </tr>
+
+                `;
+
+            }).join('') +
+
+            '</tbody>' +
+
+            '</table>';
+
+    }
+
+    catch(e){
+
+        console.error(e);
+
+        $('borrowArea').innerHTML =
+            '<div class="empty" style="color:#b42318">' +
+            'Unable to load your records. Please contact the school administrator.' +
+            '</div>';
+
+    }
+
+}
+
+
+/* ========================================= */
+/* AUTH STATE */
+/* ========================================= */
+
+auth.onAuthStateChanged(user => {
+
+    if(user){
+
+        loadPortal(user);
+
+    }
+
+    else{
+
+        $('loginCard')
+            .classList
+            .remove('hidden');
+
+
+        $('portal')
+            .classList
+            .add('hidden');
+
+
+        $('logoutBtn')
+            .classList
+            .add('hidden');
+
+    }
+
+});
+
 </script>
-</body></html>
+
+</body>
+</html>
